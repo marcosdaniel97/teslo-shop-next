@@ -32,7 +32,7 @@ export const ProductsInCart = () => {
             height={100}
             style={{
               width: '100px',
-              height: '1000px',
+              height: '100px',
             }}
             alt={product.title}
             className="mr-5 rounded"
