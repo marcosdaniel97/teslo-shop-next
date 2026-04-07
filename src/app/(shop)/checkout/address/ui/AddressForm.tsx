@@ -34,8 +34,11 @@ export const AddressForm = ({ countries, userStoredAddress = {} }: Props) => {
     register,
     formState: { isValid },
     reset,
+    trigger,
   } = useForm<FormInputs>({
     mode: 'onChange',
+    reValidateMode: 'onChange',
+
     defaultValues: {
       ...(userStoredAddress as any),
       rememberAddress: false,
@@ -72,6 +75,7 @@ export const AddressForm = ({ countries, userStoredAddress = {} }: Props) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
+      onChange={() => trigger()}
       className="grid grid-cols-1 gap-2 sm:gap-5 sm:grid-cols-2"
     >
       <div className="flex flex-col mb-2">
