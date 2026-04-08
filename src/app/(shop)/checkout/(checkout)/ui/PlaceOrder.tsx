@@ -13,11 +13,12 @@ export const PlaceOrder = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
+  // Se usa para mostrar en pantalla
   const address = useAddressStore((state) => state.address);
 
   // Debido a infinite loops no podemos usar el state creado
-  const cart = useCartStore((state) => state.cart);
-  const clearCart = useCartStore((state) => state.clearCart);
+  const cart = useCartStore((state) => state.cart); //obtener el carrito
+  const clearCart = useCartStore((state) => state.clearCart); // limpiar carrito
 
   const { itemsInCart, subTotal, tax, total } = useMemo(() => {
     const itemsInCart = cart.reduce((total, item) => total + item.quantity, 0);
@@ -38,6 +39,8 @@ export const PlaceOrder = () => {
   const onPlaceOrder = async () => {
     setIsPlacingOrder(true);
 
+    // esto realmente necesita, los demas datos lo tiene la bd
+    // Ej: el precio lo toma de la bd con el product.id. La cantidad total del item en diferentest talles
     const productsToOrder = cart.map((product) => ({
       productId: product.id,
       quantity: product.quantity,
