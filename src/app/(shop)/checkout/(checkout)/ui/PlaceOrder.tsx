@@ -45,7 +45,8 @@ export const PlaceOrder = () => {
     }));
 
     //! Server Action
-    const resp = await placeOrder(productsToOrder, address);
+    const freshAddress = useAddressStore.getState().address;
+    const resp = await placeOrder(productsToOrder, freshAddress);
     // ok puede ser true of false dependiendo si se pudo realizar la transacción
     if (!resp.ok) {
       setIsPlacingOrder(false);

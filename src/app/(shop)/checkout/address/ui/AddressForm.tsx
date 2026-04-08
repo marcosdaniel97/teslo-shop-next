@@ -29,18 +29,23 @@ interface Props {
 
 export const AddressForm = ({ countries, userStoredAddress = {} }: Props) => {
   const router = useRouter();
+
+  // Uso Zustand como fuente en el frontend
+  const address = useAddressStore((state) => state.address); // obtener la direccion del store
+  const setAddress = useAddressStore((state) => state.setAddress); // funcion para guardar la direccion en el store
+
   const {
     handleSubmit,
     register,
     formState: { isValid },
-    reset,
     trigger,
   } = useForm<FormInputs>({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
+    mode: 'onChange', // valida el formulario en tiempo real, cada vez que el usuario escribe recalcula isValid
 
     defaultValues: {
-      ...(userStoredAddress as any),
+      ...(address.firstName
+        ? address // lo último que el usuario usó
+        : userStoredAddress), // lo guardado en la bd
       rememberAddress: false,
     },
   });
@@ -49,32 +54,27 @@ export const AddressForm = ({ countries, userStoredAddress = {} }: Props) => {
     required: true,
   });
 
-  const setAddress = useAddressStore((state) => state.setAddress);
-  const address = useAddressStore((state) => state.address);
-
-  useEffect(() => {
-    if (address.firstName) {
-      reset(address);
-    }
-  }, [address, reset]);
-
   const onSubmit = async (data: FormInputs) => {
-    const { rememberAddress, ...restAddress } = data;
-
+    const { rememberAddress, ...restAddress } = data; // datos del formulario
+    // guardar en Zustand para navegacion
     setAddress(restAddress);
 
+    // manejar db segun checkbox
     if (rememberAddress) {
+      //console.log('Se esta guardando direccion en la base de datos');
       await setUserAddress(restAddress, session!.user.id);
     } else {
+      //console.log('Se esta borrando direccion de la base de datos');
       await deleteUserAddress(session!.user.id);
     }
 
+    await new Promise((resolve) => setTimeout(resolve, 0));
     router.push('/checkout');
   };
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit)} // el handleSubmit valida todo el formulario, es esta ok ejecuta onSubmit
       onChange={() => trigger()}
       className="grid grid-cols-1 gap-2 sm:gap-5 sm:grid-cols-2"
     >
